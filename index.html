@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync Pro - Advanced Study Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --tech-gradient: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            --accent-color: #00f5ff;
+            --success-color: #00ff88;
+            --warning-color: #ffb347;
+            --danger-color: #ff6b6b;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--tech-gradient);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Tech Background */
+        .tech-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--tech-gradient);
+        }
+
+        .tech-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #00f5ff22 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, #ff6b6b22 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #00ff8822 0%, transparent 50%);
+            animation: pulseBackground 4s ease-in-out infinite alternate;
+        }
+
+        .circuit-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background-image: 
+                linear-gradient(90deg, transparent 98%, var(--accent-color) 100%),
+                linear-gradient(0deg, transparent 98%, var(--accent-color) 100%);
+            background-size: 100px 100px;
+            animation: slideCircuit 20s linear infinite;
+        }
+
+        @keyframes pulseBackground {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.6; transform: scale(1.05); }
+        }
+
+        @keyframes slideCircuit {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
+        }
+
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            background: var(--tech-gradient);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .login-screen.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--accent-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-card p {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .username-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .username-btn {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .username-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .username-btn.selected {
+            background: var(--primary-gradient);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .container.visible {
+            opacity: 1;
+        }
+
+        /* Header with current date */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--accent-color), #fff, var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 10px var(--accent-color)); }
+            100% { filter: drop-shadow(0 0 20px var(--success-color)); }
+        }
+
+        .current-date {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            color: #ccc;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .user-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .switch-user-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .switch-user-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 10px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-tab.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+            animation: pageSlideIn 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageSlideIn {
+            0% { opacity: 0; transform: translateX(30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Main Dashboard Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Glass Card Styling */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            padding: 10px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Timer Section */
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: timerGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes timerGlow {
+            0% { filter: drop-shadow(0 0 10px var(--accent-color)); }
+            100% { filter: drop-shadow(0 0 20px var(--success-color)); }
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #00cc70);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #e55555);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Compact Calendar */
+        .calendar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-nav {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .calendar-nav:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .calendar-month {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 15px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #aaa;
+            padding: 8px 0;
+            font-size: 0.8rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            font-size: 0.9rem;
+            min-height: 32px;
+        }
+
+        .calendar-day:hover {
+            background: var(--glass-border);
+            transform: scale(1.1);
+        }
+
+        .calendar-day.today {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 700;
+        }
+
+        .calendar-day.has-goals {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .calendar-day.selected {
+            background: var(--accent-color);
+            color: black;
+            font-weight: 700;
+        }
+
+        /* Goals Section */
+        .goal-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .goal-input input {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .goal-input input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .goal-input input::placeholder {
+            color: #aaa;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: goalSlideIn 0.5s ease-out;
+        }
+
+        @keyframes goalSlideIn {
+            0% { opacity: 0; transform: translateX(-20px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .goal-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            border-color: var(--accent-color);
+        }
+
+        .goal-item.completed {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 204, 112, 0.2));
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .goal-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--success-color);
+        }
+
+        .goal-text {
+            flex: 1;
+            margin-left: 15px;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .delete-goal {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .delete-goal:hover {
+            background: #e55555;
+            transform: scale(1.05);
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, var(--accent-color), var(--success-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Reports section */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .user-report {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .user-report.current-user {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+        }
+
+        .user-report h3 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .timer-display {
+                font-size: 2.5rem;
+            }
+            
+            .nav-tabs {
+                gap: 5px;
+            }
+            
+            .nav-tab {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+
+            .login-card {
+                width: 90%;
+                max-width: 400px;
+                padding: 30px 20px;
+            }
+
+            .user-info {
+                position: relative;
+                margin: 10px 0;
+                justify-content: center;
+            }
+
+            .username-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .calendar {
+                max-width: 100%;
+            }
+
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Session info styling */
+        .session-info {
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .session-info strong {
+            color: var(--accent-color);
+        }
+
+        /* Calendar goal input */
+        .calendar-goal-input {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .selected-date-info {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-bg"></div>
+    <div class="circuit-lines"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h1>🚀 StudySync Pro</h1>
+            <p>Choose your account to access your personalized study dashboard</p>
+            <div class="username-selector">
+                <button class="username-btn" onclick="selectUser('Atharva')" data-user="Atharva">
+                    👨‍💻 Atharva
+                </button>
+                <button class="username-btn" onclick="selectUser('Aarzoo')" data-user="Aarzoo">
+                    👩‍💻 Aarzoo
+                </button>
+            </div>
+            <button class="btn btn-primary" onclick="login()" style="width: 100%;" id="loginBtn" disabled>
+                Launch Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="container" id="mainApp">
+        <div class="header">
+            <div class="user-info" id="userInfo">
+                <div class="user-card" id="currentUserCard"></div>
+                <button class="switch-user-btn" onclick="switchUser()">Switch User</button>
+            </div>
+            <h1>🚀 StudySync Pro</h1>
+            <div class="current-date" id="currentDate"></div>
+            <p>Your intelligent study companion</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showPage('dashboard')">🏠 Dashboard</button>
+            <button class="nav-tab" onclick="showPage('daily-goals')">📅 Daily Goals</button>
+            <button class="nav-tab" onclick="showPage('weekly-goals')">📊 Weekly Goals</button>
+            <button class="nav-tab" onclick="showPage('monthly-goals')">📈 Monthly Goals</button>
+            <button class="nav-tab" onclick="showPage('analytics')">📊 Analytics</button>
+            <button class="nav-tab" onclick="showPage('reports')">📋 Reports</button>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard">
+            <div class="main-grid">
+                <!-- Timer Section -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">⏱️</div>
+                        Study Timer
+                    </div>
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    <div class="session-info">
+                        <div>Current Session: <strong id="sessionTime">00:00:00</strong></div>
+                    </div>
+                    <div class="timer-controls">
+                        <button class="btn btn-primary" id="startBtn">Start</button>
+                        <button class="btn btn-success" id="pauseBtn">Pause</button>
+                        <button class="btn btn-danger" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Quick Goals Overview -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="card-icon">🎯</div>
+                        Today's Goals
+                    </div>
+                    <div id="todaysGoalsOverview">
+                        <p style="color: #aaa; text-align: center;">No goals set for today</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="dailyTime">0h 0m</div>
+                    <div class="stat-label">Today</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="dailyProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="weeklyTime">0h 0m</div>
+                    <div class="stat-label">This Week</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="weeklyProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="monthlyTime">0h 0m</div>
+                    <div class="stat-label">This Month</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="monthlyProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalGoals">0</div>
+                    <div class="stat-label">Total Goals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completedGoals">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completionRate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Goals Page -->
+        <div class="page" id="daily-goals">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-icon">📅</div>
+                    Daily Goals Calendar
+                </div>
+                
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" onclick="changeMonth(-1)">‹</button>
+                        <div class="calendar-month" id="calendarMonth"></div>
+                        <button class="calendar-nav" onclick="changeMonth(1)">›</button>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendarGrid">
+                        <div class="calendar-day-header">Sun</div>
+                        <div class="calendar-day-header">Mon</div>
+                        <div class="calendar-day-header">Tue</div>
+                        <div class="calendar-day-header">Wed</div>
+                        <div class="calendar-day-header">Thu</div>
+                        <div class="calendar-day-header">Fri</div>
+                        <div class="calendar-day-header">Sat</div>
+                    </div>
+                    
+                    <div class="calendar-goal-input" id="calendarGoalSection" style="display: none;">
+                        <div class="selected-date-info" id="selectedDateInfo"></div>
+                        <div class="goal-input">
+                            <input type="text" id="calendarGoalInput" placeholder="Add goal for this day...">
+                            <button class="btn btn-success" onclick="addCalendarGoal()">Add Goal</button>
+                        </div>
+                        <div id="calendarGoals"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Goals Page -->
+        <div class="page" id="weekly-goals">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    Weekly Goals
+                </div>
+                
+                <div class="goal-input">
+                    <input type="text" id="weeklyGoalInput" placeholder="Add a weekly goal...">
+                    <button class="btn btn-success" onclick="addGoal('weekly')">Add Goal</button>
+                </div>
+                <div class="goals-list" id="weeklyGoals"></div>
+            </div>
+        </div>
+
+        <!-- Monthly Goals Page -->
+        <div class="page" id="monthly-goals">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-icon">📈</div>
+                    Monthly Goals
+                </div>
+                
+                <div class="goal-input">
+                    <input type="text" id="monthlyGoalInput" placeholder="Add a monthly goal...">
+                    <button class="btn btn-success" onclick="addGoal('monthly')">Add Goal</button>
+                </div>
+                <div class="goals-list" id="monthlyGoals"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div class="page" id="analytics">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    Study Analytics
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgDailyTime">0h 0m</div>
+                        <div class="stat-label">Avg Daily Study</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="longestSession">0h 0m</div>
+                        <div class="stat-label">Longest Session</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="studyStreak">0</div>
+                        <div class="stat-label">Study Streak (Days)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalStudyDays">0</div>
+                        <div class="stat-label">Total Study Days</div>
+                    </div>
+                </div>
+                
+                <div class="glass-card" style="margin-top: 30px;">
+                    <h3 style="color: var(--accent-color); margin-bottom: 20px;">📈 Progress Overview</h3>
+                    <div style="color: #ccc; line-height: 1.6;">
+                        <p>• <strong>Consistency:</strong> Study regularly to build momentum</p>
+                        <p>• <strong>Goal Achievement:</strong> Complete daily tasks to boost success rate</p>
+                        <p>• <strong>Time Management:</strong> Track sessions to optimize study periods</p>
+                        <p>• <strong>Growth Mindset:</strong> Set challenging but achievable goals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Page -->
+        <div class="page" id="reports">
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    Study Reports - Both Users
+                </div>
+                
+                <div class="reports-grid" id="reportsGrid">
+                    <!-- Reports will be generated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = '';
+        let selectedUserForLogin = '';
+        let sessionStartTime = 0;
+        let sessionElapsedTime = 0;
+        let totalDailyTime = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let selectedDate = null;
+        let currentCalendarDate = new Date();
+
+        // Data storage structure
+        let userData = {
+            'Atharva': {
+                studyTimes: { daily: {}, weekly: {}, monthly: {} },
+                goals: { weekly: [], monthly: [] },
+                dailyGoals: {}
+            },
+            'Aarzoo': {
+                studyTimes: { daily: {}, weekly: {}, monthly: {} },
+                goals: { weekly: [], monthly: [] },
+                dailyGoals: {}
+            }
+        };
+
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // User selection for login
+        function selectUser(username) {
+            // Remove previous selections
+            document.querySelectorAll('.username-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Select current user
+            event.target.classList.add('selected');
+            selectedUserForLogin = username;
+            document.getElementById('loginBtn').disabled = false;
+        }
+
+        // Login functionality
+        function login() {
+            if (selectedUserForLogin) {
+                currentUser = selectedUserForLogin;
+                loadUserData();
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.add('visible');
+                document.getElementById('currentUserCard').textContent = `👤 ${currentUser}`;
+                updateCurrentDate();
+                initializeApp();
+            } else {
+                alert('Please select a user first');
+            }
+        }
+
+        // Switch user functionality
+        function switchUser() {
+            // Save current session if running
+            if (isRunning && sessionElapsedTime > 0) {
+                pauseTimer();
+            }
+            
+            // Show login screen again
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.remove('visible');
+            
+            // Reset selection
+            selectedUserForLogin = '';
+            document.querySelectorAll('.username-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('loginBtn').disabled = true;
+        }
+
+        // Load all user data from localStorage
+        function loadAllUserData() {
+            const storedData = JSON.parse(localStorage.getItem('studySyncMultiUserData'));
+            if (storedData) {
+                userData = storedData;
+            }
+        }
+
+        // Load current user data
+        function loadUserData() {
+            loadAllUserData();
+            const user = userData[currentUser];
+            totalDailyTime = user.studyTimes.daily[getTodayDateKey()] || 0;
+        }
+
+        // Save all user data
+        function saveUserData() {
+            if (!currentUser) return;
+            localStorage.setItem('studySyncMultiUserData', JSON.stringify(userData));
+        }
+
+        // Utility functions for date keys
+        function getTodayDateKey() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        function getThisWeekKey() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const weekNumber = getWeekNumber(today);
+            return `${year}-${String(weekNumber).padStart(2, '0')}`;
+        }
+
+        function getThisMonthKey() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function getWeekNumber(date) {
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        }
+
+        // Update current date display
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (pageId === 'daily-goals') {
+                renderCalendar();
+            } else if (pageId === 'reports') {
+                renderReports();
+            }
+        }
+
+        // Calendar functionality
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthDisplay = document.getElementById('calendarMonth');
+            
+            const existingDays = grid.querySelectorAll('.calendar-day');
+            existingDays.forEach(day => day.remove());
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            monthDisplay.textContent = `${monthNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
+            
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                grid.appendChild(emptyDay);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                dayElement.onclick = () => selectDate(year, month, day);
+                
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                if (year === today.getFullYear() && 
+                    month === today.getMonth() && 
+                    day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                if (userData[currentUser].dailyGoals[dateKey] && userData[currentUser].dailyGoals[dateKey].length > 0) {
+                    dayElement.classList.add('has-goals');
+                }
+                
+                grid.appendChild(dayElement);
+            }
+        }
+
+        function changeMonth(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function selectDate(year, month, day) {
+            document.querySelectorAll('.calendar-day').forEach(d => {
+                d.classList.remove('selected');
+            });
+            
+            event.target.classList.add('selected');
+            
+            selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dateObj = new Date(year, month, day);
+            const dateString = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('selectedDateInfo').textContent = `Goals for ${dateString}`;
+            document.getElementById('calendarGoalSection').style.display = 'block';
+            
+            renderCalendarGoals();
+        }
+
+        function addCalendarGoal() {
+            const input = document.getElementById('calendarGoalInput');
+            const text = input.value.trim();
+            
+            if (text && selectedDate) {
+                if (!userData[currentUser].dailyGoals[selectedDate]) {
+                    userData[currentUser].dailyGoals[selectedDate] = [];
+                }
+                
+                const goal = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                userData[currentUser].dailyGoals[selectedDate].push(goal);
+                saveUserData();
+                input.value = '';
+                renderCalendarGoals();
+                renderCalendar();
+                updateTodaysGoalsOverview();
+                updateStats();
+            }
+        }
+
+        function renderCalendarGoals() {
+            if (!selectedDate) return;
+            
+            const container = document.getElementById('calendarGoals');
+            const goals = userData[currentUser].dailyGoals[selectedDate] || [];
+            
+            container.innerHTML = goals.map(goal => `
+                <div class="goal-item ${goal.completed ? 'completed' : ''}">
+                    <input type="checkbox" class="goal-checkbox" 
+                           ${goal.completed ? 'checked' : ''} 
+                           onchange="toggleCalendarGoal('${selectedDate}', ${goal.id})">
+                    <span class="goal-text">${goal.text}</span>
+                    <button class="delete-goal" onclick="deleteCalendarGoal('${selectedDate}', ${goal.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleCalendarGoal(date, id) {
+            const goal = userData[currentUser].dailyGoals[date].find(g => g.id === id);
+            if (goal) {
+                goal.completed = !goal.completed;
+                saveUserData();
+                renderCalendarGoals();
+                updateTodaysGoalsOverview();
+                updateStats();
+            }
+        }
+
+        function deleteCalendarGoal(date, id) {
+            userData[currentUser].dailyGoals[date] = userData[currentUser].dailyGoals[date].filter(g => g.id !== id);
+            if (userData[currentUser].dailyGoals[date].length === 0) {
+                delete userData[currentUser].dailyGoals[date];
+            }
+            saveUserData();
+            renderCalendarGoals();
+            renderCalendar();
+            updateTodaysGoalsOverview();
+            updateStats();
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (!isRunning) {
+                sessionStartTime = Date.now() - sessionElapsedTime;
+                timerInterval = setInterval(updateTimer, 100);
+                isRunning = true;
+                document.getElementById('startBtn').textContent = 'Running...';
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                document.getElementById('resetBtn').disabled = false;
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                
+                const sessionMinutes = Math.floor(sessionElapsedTime / 60000);
+                if (sessionMinutes > 0) {
+                    saveCurrentSession(sessionMinutes);
+                }
+                
+                document.getElementById('startBtn').textContent = 'Resume';
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+            }
+        }
+
+        function resetTimer() {
+            if (sessionElapsedTime > 0) {
+                const sessionMinutes = Math.floor(sessionElapsedTime / 60000);
+                if (sessionMinutes > 0) {
+                    saveCurrentSession(sessionMinutes);
+                }
+            }
+            
+            clearInterval(timerInterval);
+            isRunning = false;
+            sessionElapsedTime = 0;
+            
+            updateTimerDisplay();
+            document.getElementById('startBtn').textContent = 'Start';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('resetBtn').disabled = true;
+        }
+
+        function updateTimer() {
+            if (isRunning) {
+                sessionElapsedTime = Date.now() - sessionStartTime;
+                updateTimerDisplay();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const sessionDisplay = formatTime(sessionElapsedTime);
+            const totalDisplay = formatTime((totalDailyTime * 60000) + sessionElapsedTime);
+            
+            document.getElementById('sessionTime').textContent = sessionDisplay;
+            document.getElementById('timerDisplay').textContent = totalDisplay;
+        }
+
+        function saveCurrentSession(sessionMinutes) {
+            if (sessionMinutes <= 0) return;
+            
+            totalDailyTime += sessionMinutes;
+            
+            const todayKey = getTodayDateKey();
+            const weekKey = getThisWeekKey();
+            const monthKey = getThisMonthKey();
+            
+            userData[currentUser].studyTimes.daily[todayKey] = totalDailyTime;
+            userData[currentUser].studyTimes.weekly[weekKey] = (userData[currentUser].studyTimes.weekly[weekKey] || 0) + sessionMinutes;
+            userData[currentUser].studyTimes.monthly[monthKey] = (userData[currentUser].studyTimes.monthly[monthKey] || 0) + sessionMinutes;
+            
+            saveUserData();
+            updateStats();
+            
+            sessionElapsedTime = 0;
+        }
+
+        // Goals functions
+        function addGoal(period) {
+            const input = document.getElementById(`${period}GoalInput`);
+            const text = input.value.trim();
+            
+            if (text) {
+                const goal = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                userData[currentUser].goals[period].push(goal);
+                saveUserData();
+                input.value = '';
+                renderGoals();
+                updateStats();
+            }
+        }
+
+        function toggleGoal(period, id) {
+            const goal = userData[currentUser].goals[period].find(g => g.id === id);
+            if (goal) {
+                goal.completed = !goal.completed;
+                saveUserData();
+                renderGoals();
+                updateStats();
+            }
+        }
+
+        function deleteGoal(period, id) {
+            userData[currentUser].goals[period] = userData[currentUser].goals[period].filter(g => g.id !== id);
+            saveUserData();
+            renderGoals();
+            updateStats();
+        }
+
+        function renderGoals() {
+            ['weekly', 'monthly'].forEach(period => {
+                const container = document.getElementById(`${period}Goals`);
+                if (container) {
+                    container.innerHTML = userData[currentUser].goals[period].map(goal => `
+                        <div class="goal-item ${goal.completed ? 'completed' : ''}">
+                            <input type="checkbox" class="goal-checkbox" 
+                                   ${goal.completed ? 'checked' : ''} 
+                                   onchange="toggleGoal('${period}', ${goal.id})">
+                            <span class="goal-text">${goal.text}</span>
+                            <button class="delete-goal" onclick="deleteGoal('${period}', ${goal.id})">Delete</button>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // Update today's goals overview
+        function updateTodaysGoalsOverview() {
+            const todayKey = getTodayDateKey();
+            const todaysGoals = userData[currentUser].dailyGoals[todayKey] || [];
+            
+            const container = document.getElementById('todaysGoalsOverview');
+            
+            if (todaysGoals.length === 0) {
+                container.innerHTML = '<p style="color: #aaa; text-align: center;">No goals set for today</p>';
+            } else {
+                container.innerHTML = todaysGoals.slice(0, 3).map(goal => `
+                    <div class="goal-item ${goal.completed ? 'completed' : ''}" style="margin-bottom: 10px;">
+                        <input type="checkbox" class="goal-checkbox" 
+                               ${goal.completed ? 'checked' : ''} 
+                               onchange="toggleCalendarGoal('${todayKey}', ${goal.id})">
+                        <span class="goal-text">${goal.text}</span>
+                    </div>
+                `).join('') + (todaysGoals.length > 3 ? `<p style="color: #aaa; text-align: center; margin-top: 10px;">+${todaysGoals.length - 3} more goals</p>` : '');
+            }
+        }
+
+        // Reports functionality
+        function renderReports() {
+            const container = document.getElementById('reportsGrid');
+            
+            container.innerHTML = Object.keys(userData).map(username => {
+                const user = userData[username];
+                const isCurrentUser = username === currentUser;
+                
+                // Calculate stats for this user
+                const todayKey = getTodayDateKey();
+                const weekKey = getThisWeekKey();
+                const monthKey = getThisMonthKey();
+                
+                const dailyMinutes = user.studyTimes.daily[todayKey] || 0;
+                const weeklyMinutes = user.studyTimes.weekly[weekKey] || 0;
+                const monthlyMinutes = user.studyTimes.monthly[monthKey] || 0;
+                
+                const todayGoals = user.dailyGoals[todayKey] || [];
+                const allGoals = [...todayGoals, ...user.goals.weekly, ...user.goals.monthly];
+                const completedGoalsCount = allGoals.filter(g => g.completed).length;
+                const totalGoalsCount = allGoals.length;
+                const completionRate = totalGoalsCount > 0 ? Math.round((completedGoalsCount / totalGoalsCount) * 100) : 0;
+                
+                const allDailyMinutes = Object.values(user.studyTimes.daily);
+                const studyDays = allDailyMinutes.filter(m => m > 0).length;
+                const streak = calculateStreakForUser(user);
+                
+                return `
+                    <div class="user-report ${isCurrentUser ? 'current-user' : ''}">
+                        <h3>
+                            ${username === 'Atharva' ? '👨‍💻' : '👩‍💻'} ${username}
+                            ${isCurrentUser ? '<span class="user-badge">You</span>' : ''}
+                        </h3>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${formatTimeForStats(dailyMinutes)}</div>
+                                <div class="stat-label">Today</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${formatTimeForStats(weeklyMinutes)}</div>
+                                <div class="stat-label">This Week</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${formatTimeForStats(monthlyMinutes)}</div>
+                                <div class="stat-label">This Month</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${completionRate}%</div>
+                                <div class="stat-label">Success Rate</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${streak}</div>
+                                <div class="stat-label">Study Streak</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${studyDays}</div>
+                                <div class="stat-label">Study Days</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                            <h4 style="color: var(--accent-color); margin-bottom: 10px;">Recent Goals</h4>
+                            <div style="color: #ccc;">
+                                ${todayGoals.slice(0, 3).map(goal => `
+                                    <div style="padding: 5px 0; ${goal.completed ? 'text-decoration: line-through; opacity: 0.7;' : ''}">
+                                        ${goal.completed ? '✅' : '⏳'} ${goal.text}
+                                    </div>
+                                `).join('') || '<p style="opacity: 0.7;">No goals set for today</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Utility functions
+        function formatTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function formatTimeForStats(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}h ${mins}m`;
+        }
+
+        function updateStats() {
+            const user = userData[currentUser];
+            const todayKey = getTodayDateKey();
+            const weekKey = getThisWeekKey();
+            const monthKey = getThisMonthKey();
+            
+            const currentSessionMinutes = Math.floor(sessionElapsedTime / 60000);
+            
+            const dailyMinutes = totalDailyTime + currentSessionMinutes;
+            const weeklyMinutes = (user.studyTimes.weekly[weekKey] || 0) + currentSessionMinutes;
+            const monthlyMinutes = (user.studyTimes.monthly[monthKey] || 0) + currentSessionMinutes;
+            
+            document.getElementById('dailyTime').textContent = formatTimeForStats(dailyMinutes);
+            document.getElementById('weeklyTime').textContent = formatTimeForStats(weeklyMinutes);
+            document.getElementById('monthlyTime').textContent = formatTimeForStats(monthlyMinutes);
+            
+            // Progress bars (8h daily, 40h weekly, 160h monthly goals)
+            document.getElementById('dailyProgress').style.width = `${Math.min((dailyMinutes / 480) * 100, 100)}%`;
+            document.getElementById('weeklyProgress').style.width = `${Math.min((weeklyMinutes / 2400) * 100, 100)}%`;
+            document.getElementById('monthlyProgress').style.width = `${Math.min((monthlyMinutes / 9600) * 100, 100)}%`;
+            
+            // Goals stats
+            const todayGoals = user.dailyGoals[todayKey] || [];
+            const allGoals = [...todayGoals, ...user.goals.weekly, ...user.goals.monthly];
+            const completedGoalsCount = allGoals.filter(g => g.completed).length;
+            const totalGoalsCount = allGoals.length;
+            const completionRate = totalGoalsCount > 0 ? Math.round((completedGoalsCount / totalGoalsCount) * 100) : 0;
+            
+            document.getElementById('totalGoals').textContent = totalGoalsCount;
+            document.getElementById('completedGoals').textContent = completedGoalsCount;
+            document.getElementById('completionRate').textContent = `${completionRate}%`;
+            
+            // Analytics stats
+            const allDailyMinutes = Object.values(user.studyTimes.daily);
+            const avgDaily = allDailyMinutes.length > 0 ? 
+                Math.round(allDailyMinutes.reduce((a, b) => a + b, 0) / allDailyMinutes.length) : 0;
+            const longestSession = Math.max(...allDailyMinutes, 0);
+            const studyDays = allDailyMinutes.filter(m => m > 0).length;
+            
+            document.getElementById('avgDailyTime').textContent = formatTimeForStats(avgDaily);
+            document.getElementById('longestSession').textContent = formatTimeForStats(longestSession);
+            document.getElementById('studyStreak').textContent = calculateStreakForUser(user);
+            document.getElementById('totalStudyDays').textContent = studyDays;
+        }
+
+        function calculateStreakForUser(user) {
+            const today = new Date();
+            let streak = 0;
+            let currentDate = new Date(today);
+            
+            while (true) {
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                if (user.studyTimes.daily[dateKey] && user.studyTimes.daily[dateKey] > 0) {
+                    streak++;
+                    currentDate.setDate(currentDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        // Initialize app
+        function initializeApp() {
+            renderGoals();
+            updateStats();
+            updateTodaysGoalsOverview();
+            updateTimerDisplay();
+            
+            // Timer event listeners
+            document.getElementById('startBtn').addEventListener('click', startTimer);
+            document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
+            document.getElementById('resetBtn').addEventListener('click', resetTimer);
+            
+            // Initial button states
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('resetBtn').disabled = true;
+            
+            // Enter key support for goal inputs
+            ['weekly', 'monthly'].forEach(period => {
+                const input = document.getElementById(`${period}GoalInput`);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            addGoal(period);
+                        }
+                    });
+                }
+            });
+            
+            // Calendar goal input enter key support
+            document.getElementById('calendarGoalInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addCalendarGoal();
+                }
+            });
+            
+            // Update stats every second when timer is running
+            setInterval(() => {
+                if (isRunning) {
+                    updateStats();
+                }
+            }, 1000);
+            
+            // Auto-save every 30 seconds when running
+            setInterval(() => {
+                if (isRunning && sessionElapsedTime > 0) {
+                    const sessionMinutes = Math.floor(sessionElapsedTime / 60000);
+                    if (sessionMinutes > 0) {
+                        const todayKey = getTodayDateKey();
+                        const weekKey = getThisWeekKey();
+                        const monthKey = getThisMonthKey();
+                        
+                        const tempTotalDaily = totalDailyTime + sessionMinutes;
+                        userData[currentUser].studyTimes.daily[todayKey] = tempTotalDaily;
+                        userData[currentUser].studyTimes.weekly[weekKey] = (userData[currentUser].studyTimes.weekly[weekKey] || 0) - 
+                            (userData[currentUser].studyTimes.daily[todayKey] - tempTotalDaily) + sessionMinutes;
+                        userData[currentUser].studyTimes.monthly[monthKey] = (userData[currentUser].studyTimes.monthly[monthKey] || 0) - 
+                            (userData[currentUser].studyTimes.daily[todayKey] - tempTotalDaily) + sessionMinutes;
+                        
+                        saveUserData();
+                    }
+                }
+            }, 30000);
+        }
+
+        // Initialize particles and login screen
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            loadAllUserData(); // Load existing data on page load
+        });
+    </script>
+</body>
+</html>
